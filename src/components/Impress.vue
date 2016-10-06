@@ -1,5 +1,5 @@
 <template>
-  <div class="hello">
+  <div class="impress">
     <h1>{{ msg }}</h1>
   </div>
 </template>
@@ -8,7 +8,7 @@
 export default {
   data () {
     return {
-      msg: 'Hello World!'
+      msg: 'Impressum'
     }
   }
 }
@@ -17,6 +17,6 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 h1 {
-  color: #42b983;
+  color: #ee0000;
 }
 </style>
