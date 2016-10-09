@@ -2,7 +2,7 @@
   <div id="app">
     <router-view></router-view>
     <p>
-      Welcome to your Vue.js app!
+      Welcome to your Vue.js app build with love!
     </p>
     <p>
       To get a better understanding of how this boilerplate works, check out

@@ -1,16 +1,17 @@
-var path = require('path')
-var config = require('../config')
-var utils = require('./utils')
-var projectRoot = path.resolve(__dirname, '../')
+const webpack = require('webpack')
+const path = require('path')
+const config = require('../config')
+const utils = require('./utils')
+const projectRoot = path.resolve(__dirname, '../')
 
 module.exports = {
   entry: {
-    app: './src/main.js'
+    app: './src/client-entry.js',
+    vendor: ['vue', 'vue-router', 'vuex', 'es6-promise']
   },
   output: {
     path: config.build.assetsRoot,
-    publicPath: process.env.NODE_ENV === 'production' ? config.build.assetsPublicPath : config.dev.assetsPublicPath,
-    filename: '[name].js'
+    publicPath: process.env.NODE_ENV === 'production' ? config.build.assetsPublicPath : config.dev.assetsPublicPath
   },
   resolve: {
     extensions: ['', '.js', '.vue'],
@@ -73,15 +74,19 @@ module.exports = {
       }
     ]
   },
-  eslint: {
-    formatter: require('eslint-friendly-formatter')
-  },
-  vue: {
-    loaders: utils.cssLoaders(),
-    postcss: [
-      require('autoprefixer')({
-        browsers: ['last 2 versions']
-      })
-    ]
-  }
+  plugins: [
+    new webpack.LoaderOptionsPlugin({
+      eslint: {
+        formatter: require('eslint-friendly-formatter')
+      },
+      vue: {
+        loaders: utils.cssLoaders(),
+        postcss: [
+          require('autoprefixer')({
+            browsers: ['last 2 versions']
+          })
+        ]
+      }
+    })
+  ]
 }
