@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "node server",
     "start": "NODE_ENV=production node server",
-    "build": "npm run build:client && npm run build:server",
+    "build": "node build/build.js",
     "build:client": "NODE_ENV=production webpack --config build/webpack.client.conf.js --progress --hide-modules",
     "build:server": "NODE_ENV=production webpack --config build/webpack.server.conf.js --progress --hide-modules",
     "unit": "NODE_ENV=test karma start test/unit/karma.conf.js --single-run",
