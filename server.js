@@ -1,6 +1,6 @@
 process.env.VUE_ENV = 'server'
-const isProd = process.env.NODE_ENV === 'production'
-
+const isProd = process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'test'
+const config = require('./config')
 const fs = require('fs')
 const path = require('path')
 const resolve = file => path.resolve(__dirname, file)
@@ -84,11 +84,17 @@ app.get('*', (req, res) => {
   })
 
   renderStream.on('error', err => {
-    throw err
-  })
+    return res
+      .status(500)
+      .send('Server Error')
+    })
 })
 
-const port = process.env.PORT || 8080
-app.listen(port, () => {
+const port = config.port || 8080
+module.exports = app.listen(port, (err) => {
+  if (err) {
+    console.log(err)
+  }
+
   console.log(`server started at localhost:${port}`)
 })
