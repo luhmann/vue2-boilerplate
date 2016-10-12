@@ -1,6 +1,18 @@
-# daenen-vue2
+# Vue2-Boilerplate
 
-> Webpage for daenen4.de
+> A minimal setup for an universal vue2 app
+
+
+## Features
+
+* Vue2
+* Webpack2 with Tree Shaking Support
+* Webpack Dev-Server with HMR
+* vue-router
+* vuex
+* Server Side Rendering
+* Karma for Unit Tests
+* NightWatch for E2E-Tests
 
 ## Build Setup
 
@@ -24,4 +36,19 @@ npm run e2e
 npm test
 ```
 
-For detailed explanation on how things work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+## webpack-proxy
+
+You can define routes you want to proxy during development (e.g local mockes api-endpoints) by specifying them in `config/index.js` under `proxyTable` like this:
+
+``` javascript
+    proxyTable: {
+      '/api': {
+        target: 'http://jsonplaceholder.typicode.com',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/api': ''
+        }
+      }
+    },
+
+```
