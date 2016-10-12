@@ -26,12 +26,15 @@ if (isProd) {
 }
 
 function createRenderer (bundle) {
-  return createBundleRenderer(bundle, {
-    // cache: require('lru-cache')({
-    //   max: 1000,
-    //   maxAge: 1000 * 60 * 15
-    // })
-  })
+  let options = {}
+  if (isProd) {
+    options.cache = require('lru-cache')({
+      max: 1000,
+      maxAge: 1000 * 60 * 15
+    })
+  }
+
+  return createBundleRenderer(bundle, options)
 }
 
 // TODO: take from config
@@ -84,6 +87,7 @@ app.get('*', (req, res) => {
   })
 
   renderStream.on('error', err => {
+    console.log(err)
     return res
       .status(500)
       .send('Server Error')
