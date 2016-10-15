@@ -10,7 +10,7 @@ const serverConfig = require('./webpack.server.conf')
 // https://github.com/chimurai/http-proxy-middleware
 const proxyTable = config.dev.proxyTable
 
-module.exports = function setupDevServer (app, onUpdate) {
+module.exports = function setupDevServer (app, onUpdate, whenReady) {
   // setup on the fly compilation + hot-reload
   clientConfig.entry.app = ['webpack-hot-middleware/client', clientConfig.entry.app]
   clientConfig.plugins.push(
@@ -19,13 +19,16 @@ module.exports = function setupDevServer (app, onUpdate) {
   )
 
   const clientCompiler = webpack(clientConfig)
-  app.use(require('webpack-dev-middleware')(clientCompiler, {
+  const webpackDevMiddleware = require('webpack-dev-middleware')(clientCompiler, {
     publicPath: clientConfig.output.publicPath,
     stats: {
       colors: true,
       chunks: false
     }
-  }))
+  })
+
+  app.use(webpackDevMiddleware)
+  webpackDevMiddleware.waitUntilValid(whenReady)
   app.use(require('webpack-hot-middleware')(clientCompiler))
 
   // proxy api requests

@@ -13,16 +13,42 @@ const createBundleRenderer = require('vue-server-renderer').createBundleRenderer
 
 const app = express()
 
+// parse index.html template
+const parseHtml = () => {
+  const template = fs.readFileSync(resolve('./dist/index.html'), 'utf-8')
+  const i = template.indexOf('{{ APP }}')
+  // styles are injected dynamically via vue-style-loader in development
+  return {
+    head: template.slice(0, i),
+    tail: template.slice(i + '{{ APP }}'.length)
+  }
+}
+
 // setup the server renderer, depending on dev/prod environment
 let renderer
+let html
 if (isProd) {
   // create server renderer from real fs
   const bundlePath = resolve('./dist/server-bundle.js')
   renderer = createRenderer(fs.readFileSync(bundlePath, 'utf-8'))
+  html = parseHtml()
 } else {
-  require('./build/setup-dev-server')(app, bundle => {
-    renderer = createRenderer(bundle)
-  })
+  require('./build/setup-dev-server')(
+    app,
+    bundle => {
+      renderer = createRenderer(bundle)
+    },
+    // waitUntilValid-function only execute this when the bundle is valid at first or valid again
+    () => {
+      if (!html) {
+        console.log('Parsing html')
+        // parse html only when bundle has been valid once, because in devMode it is only written to disk
+        // once webpack has run once, this is achieved by the `HtmlWebpackHarddiskPlugin`
+        // NOTE: under this setup you have to restart the dev server, when you change the base template `index.html`
+        html = parseHtml()
+      }
+    }
+  )
 }
 
 function createRenderer (bundle) {
@@ -41,21 +67,8 @@ function createRenderer (bundle) {
 app.use('/dist', express.static(resolve('./dist')))
 // app.use(favicon(resolve('./src/assets/logo.png')))
 
-// parse index.html template
-// NOTE: Make sure this stays after the renderer init, as the dev build needs
-// to create the index.html in dist first
-const html = (() => {
-  const template = fs.readFileSync(resolve('./dist/index.html'), 'utf-8')
-  const i = template.indexOf('{{ APP }}')
-  // styles are injected dynamically via vue-style-loader in development
-  return {
-    head: template.slice(0, i),
-    tail: template.slice(i + '{{ APP }}'.length)
-  }
-})()
-
 app.get('*', (req, res) => {
-  if (!renderer) {
+  if (!renderer || !html) {
     return res.end('waiting for compilation... refresh in a moment.')
   }
 
